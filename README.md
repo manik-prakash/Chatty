@@ -87,7 +87,7 @@ python manage.py createsuperuser
 ### 3. Frontend setup
 ```bash
 cd frontend
-npm install    # or yarn install
+npm install   
 ```
 
 package.json (relevant):
@@ -160,15 +160,6 @@ CHANNEL_LAYERS = {
         }
 }
 ASGI_APPLICATION = "chatproject.asgi.application"
-```
-
-tailwind.config.js:
-```js
-export default {
-    content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
-    theme: { extend: { colors: { primary: '#667eea', secondary: '#764ba2' } } },
-    plugins: [],
-}
 ```
 
 .env:
@@ -260,16 +251,7 @@ npm run build
 - GET  /api/rooms/{slug}/messages/
 - WS: ws://localhost:8000/ws/chat/{room_name}/
 
-## Contributing
-1. Fork repository
-2. Create feature branch
-3. Commit & push
-4. Open a pull request
-
-## License
-MIT
-
 ## Author
-Your Name  
-GitHub: https://github.com/yourusername  
-LinkedIn: https://linkedin.com/in/yourprofile
+Manik Prakash
+GitHub: https://github.com/manik-prakash  
+LinkedIn: https://linkedin.com/in/manik-prakash
