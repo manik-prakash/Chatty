@@ -119,26 +119,27 @@ Frontend: http://localhost:3000 or http://localhost:5173
 
 ## Project Structure
 ```
-chatapp/
+Chatty/
+│
 ├── backend/
-│   ├── manage.py
-│   ├── requirements.txt
-│   ├── db.sqlite3
-│   ├── chatproject/
-│   │   ├── settings.py
-│   │   ├── asgi.py
-│   └── chat/
-│       ├── consumers.py
-│       ├── routing.py
-└── frontend/
-        ├── public/
-        ├── src/
-        │   ├── components/
-        │   ├── pages/
-        │   ├── App.jsx
-        │   └── main.jsx
-        ├── tailwind.config.js
-        └── package.json
+│   └── chatapp/
+│       ├── chat/
+│       ├── chatproject/
+│       ├── venv/
+│       ├── db.sqlite3
+│       ├── manage.py
+│       └── requirements.txt
+│
+├── frontend/
+│   ├── node_modules/
+│   ├── public/
+│   ├── src/
+│   ├── package.json
+│   ├── vite.config.js
+│   └── .gitignore
+│
+├── .gitignore   
+└── README.md
 ```
 
 ## Configuration (examples)
