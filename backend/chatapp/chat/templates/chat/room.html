@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ room.name }} - Chat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            background: white;
+            padding: 15px 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-header h1 {
+            color: #667eea;
+            font-size: 22px;
+        }
+        
+        .back-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        
+        .back-btn:hover {
+            background: #4b5563;
+        }
+        
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            width: 100%;
+            margin: 20px auto;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f9fafb;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+        
+        .message-user {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 14px;
+        }
+        
+        .message-time {
+            color: #9ca3af;
+            font-size: 12px;
+        }
+        
+        .message-content {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            word-wrap: break-word;
+            line-height: 1.5;
+        }
+        
+        .message.own .message-content {
+            background: #667eea;
+            color: white;
+            border-left: 3px solid #5568d3;
+        }
+        
+        .message.own .message-user {
+            color: #5568d3;
+        }
+        
+        .input-container {
+            padding: 20px;
+            background: white;
+            border-top: 2px solid #e5e7eb;
+            display: flex;
+            gap: 10px;
+        }
+        
+        #message-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        #message-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        #send-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        #send-button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        #send-button:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .connection-status {
+            padding: 8px 15px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .connection-status.connected {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .connection-status.disconnected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-header">
+        <h1>💬 {{ room.name }}</h1>
+        <a href="{% url 'index' %}" class="back-btn">← Back to Rooms</a>
+    </div>
+    
+    <div class="chat-container">
+        <div id="connection-status" class="connection-status connected">● Connected</div>
+        
+        <div class="messages-container" id="messages-container">
+            {% for message in messages %}
+            <div class="message {% if message.user.username == username %}own{% endif %}">
+                <div class="message-header">
+                    <span class="message-user">{{ message.user.username }}</span>
+                    <span class="message-time">{{ message.timestamp|date:"h:i A" }}</span>
+                </div>
+                <div class="message-content">{{ message.content }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="input-container">
+            <input type="text" id="message-input" placeholder="Type your message..." autocomplete="off">
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const roomName = "{{ room.slug }}";
+        const username = "{{ username }}";
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const chatSocket = new WebSocket(
+            protocol + '//' + window.location.host + '/ws/chat/' + roomName + '/'
+        );
+
+        const messagesContainer = document.getElementById('messages-container');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const connectionStatus = document.getElementById('connection-status');
+
+        chatSocket.onopen = function(e) {
+            console.log('WebSocket connection established');
+            connectionStatus.className = 'connection-status connected';
+            connectionStatus.textContent = '● Connected';
+            sendButton.disabled = false;
+        };
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            addMessage(data.username, data.message, data.timestamp);
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('WebSocket connection closed');
+            connectionStatus.className = 'connection-status disconnected';
+            connectionStatus.textContent = '● Disconnected';
+            sendButton.disabled = true;
+        };
+
+        chatSocket.onerror = function(e) {
+            console.error('WebSocket error:', e);
+        };
+
+        function addMessage(user, message, timestamp) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message' + (user === username ? ' own' : '');
+            
+            const now = new Date();
+            const timeString = timestamp || now.toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+            });
+            
+            messageDiv.innerHTML = `
+                <div class="message-header">
+                    <span class="message-user">${user}</span>
+                    <span class="message-time">${timeString}</span>
+                </div>
+                <div class="message-content">${escapeHtml(message)}</div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message && chatSocket.readyState === WebSocket.OPEN) {
+                const now = new Date();
+                const timestamp = now.toLocaleTimeString('en-US', { 
+                    hour: 'numeric', 
+                    minute: '2-digit',
+                    hour12: true 
+                });
+                
+                chatSocket.send(JSON.stringify({
+                    'message': message,
+                    'username': username,
+                    'timestamp': timestamp
+                }));
+                messageInput.value = '';
+            }
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Auto-scroll to bottom on page load
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    </script>
+</body>
+</html>
