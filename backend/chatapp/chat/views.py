@@ -166,3 +166,31 @@ def room_detail(request, room_name):
         'messages': MessageSerializer(messages, many=True).data,
         'username': request.user.username
     })
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+@csrf_protect
+def room_delete(request, room_id):
+    """Delete a room (only owner can delete)"""
+    try:
+        room = get_object_or_404(Room, id=room_id)
+        
+        if room.created_by != request.user:
+            return Response(
+                {'error': 'Only the room owner can delete this room'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        room_name = room.name
+        room.delete()
+        
+        return Response(
+            {'message': f'Room "{room_name}" deleted successfully'},
+            status=status.HTTP_204_NO_CONTENT
+        )
+    except Exception as e:
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_400_BAD_REQUEST
+        )

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Trash2 } from 'lucide-react';
 
 const RoomList = ({ user, onLogout, onJoinRoom }) => {
   const [rooms, setRooms] = useState([]);
@@ -7,6 +8,7 @@ const RoomList = ({ user, onLogout, onJoinRoom }) => {
   const [roomDescription, setRoomDescription] = useState('');
   const [message, setMessage] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [deletingRoomId, setDeletingRoomId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -111,6 +113,60 @@ const RoomList = ({ user, onLogout, onJoinRoom }) => {
     }
   };
 
+  const handleDeleteRoom = async (roomId, roomName) => {
+    if (!window.confirm(`Are you sure you want to delete "${roomName}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    setDeletingRoomId(roomId);
+    console.log("=== DELETING ROOM ===");
+    console.log("Room ID:", roomId);
+
+    try {
+      const csrftoken = getCookie('csrftoken');
+      console.log("CSRF Token found:", !!csrftoken);
+
+      const response = await fetch(`http://localhost:8000/api/rooms/${roomId}/`, {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "X-CSRFToken": csrftoken,
+        },
+      });
+
+      console.log("Response status:", response.status, response.statusText);
+
+      if (response.ok || response.status === 204) {
+        console.log("Room deleted successfully!");
+        setMessage("Room deleted successfully!");
+        setTimeout(() => setMessage(""), 3000);
+        await fetchRooms();
+      } else {
+        let data;
+        try {
+          data = await response.json();
+          console.error("Error details:", data);
+          setMessage(data.error || data.detail || "Failed to delete room");
+        } catch (e) {
+          console.log(e);
+          setMessage("Failed to delete room");
+        }
+        setTimeout(() => setMessage(""), 5000);
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+      setMessage("Network error: " + error.message);
+      setTimeout(() => setMessage(""), 5000);
+    } finally {
+      setDeletingRoomId(null);
+      console.log("=== END DELETE ROOM ===");
+    }
+  };
+
+  const isOwner = (room) => {
+    return room.created_by?.id === user.id || room.created_by?.username === user.username;
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -139,8 +195,8 @@ const RoomList = ({ user, onLogout, onJoinRoom }) => {
 
         {message && (
           <div className={`border px-4 py-3 rounded-md mb-5 text-sm ${message.includes('success')
-              ? 'bg-green-950 border-green-800 text-green-300'
-              : 'bg-red-950 border-red-800 text-red-300'
+            ? 'bg-green-950 border-green-800 text-green-300'
+            : 'bg-red-950 border-red-800 text-red-300'
             }`}>
             {message}
           </div>
@@ -184,11 +240,23 @@ const RoomList = ({ user, onLogout, onJoinRoom }) => {
                 key={room.id}
                 className="bg-gray-950 p-5 rounded-lg mb-4 border-2 border-gray-800 hover:border-gray-600 hover:-translate-y-0.5 hover:shadow-lg transition-all"
               >
-                <h3 className="text-gray-100 mb-2 text-lg font-bold">{room.name}</h3>
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-gray-100 text-lg font-bold">{room.name}</h3>
+                  {isOwner(room) && (
+                    <button
+                      onClick={() => handleDeleteRoom(room.id, room.name)}
+                      disabled={deletingRoomId === room.id}
+                      className="text-red-400 hover:text-red-300 hover:bg-red-950 p-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Delete room"
+                    >
+                      {deletingRoomId === room.id ? '⏳' : '🗑️'}
+                    </button>
+                  )}
+                </div>
                 {room.description && (
                   <p className="text-gray-400 mb-3 text-sm">{room.description}</p>
                 )}
-                <div className="text-gray-600 text-xs mb-2">
+                <div className="text-gray-600 text-xs mb-3">
                   Created by {room.created_by?.username || 'Unknown'} • {new Date(room.created_at).toLocaleDateString()}
                 </div>
                 <button

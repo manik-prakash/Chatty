@@ -56,7 +56,6 @@ const LandingPage = () => {
               Learn More
             </button>
           </Link>
-
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto mt-20">

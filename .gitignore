@@ -10,7 +10,7 @@ staticfiles/
 frontend/node_modules/
 frontend/dist/
 frontend/build/
-
+frontend/.env
 .DS_Store
 
 .vscode/
