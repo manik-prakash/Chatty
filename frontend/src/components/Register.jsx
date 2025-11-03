@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { Link } from 'react-router-dom';
+//import { auth, googleProvider } from "../firebase/config.js ";
+//import { signInWithPopup } from "firebase/auth";
 
 const Register = ({ onRegister }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
     const [error, setError] = useState('');
+    //const [loading, setLoading] = useState(false);
 
     function getCookie(name) {
         let cookieValue = null;
@@ -21,6 +24,40 @@ const Register = ({ onRegister }) => {
         }
         return cookieValue;
     }
+
+    // const signInWithGoogle = async () => {
+    //     setLoading(true);
+    //     setError(null);
+    //     try {
+    //         const result = await signInWithPopup(auth, googleProvider);
+    //         if (result && result.user) {
+    //             const userEmail = result.user.email;
+    //             if (userEmail) {
+    //                 setFormData({
+    //                     ...formData,
+    //                     email: userEmail,
+    //                     name: result.user.displayName,
+    //                 });
+    //                 document.cookie = `email=${encodeURIComponent(
+    //                     userEmail
+    //                 )}; Path=/; Max-Age=86400; Secure; SameSite=Strict`;
+    //                 setLoading(false);
+    //             } else {
+    //                 setLoading(false);
+    //                 setError(
+    //                     `Provide a valid gmail address.`
+    //                 );
+    //                 auth.signOut();
+    //             }
+    //         } else {
+    //             setError("No redirect result found");
+    //             setLoading(false);
+    //         }
+    //     } catch (error) {
+    //         console.error("Error signing in with Google:", error);
+    //         setLoading(false);
+    //     }
+    // };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -68,90 +105,6 @@ const Register = ({ onRegister }) => {
             setError("Network error");
         }
     };
-
-
-    // return (
-    //     <div className="min-h-screen bg-linear-to-br from-purple-500 to-purple-800 flex items-center justify-center p-5">
-    //         <div className="bg-white p-10 rounded-xl shadow-2xl w-full max-w-md">
-    //             <div className="text-center mb-8">
-    //                 <h1 className="text-purple-600 text-3xl font-bold mb-2">💬 Chat App</h1>
-    //                 <p className="text-gray-600 text-sm">Create your account</p>
-    //             </div>
-
-    //             {error && (
-    //                 <div className="bg-red-100 border border-red-400 text-red-800 px-3 py-3 rounded-md mb-5 text-sm">
-    //                     {error}
-    //                 </div>
-    //             )}
-
-    //             <div className="space-y-5">
-    //                 <div>
-    //                     <label className="block mb-2 text-gray-800 font-semibold text-sm">
-    //                         Username <span className="text-red-500">*</span>
-    //                     </label>
-    //                     <input
-    //                         type="text"
-    //                         value={username}
-    //                         onChange={(e) => setUsername(e.target.value)}
-    //                         className="w-full px-3 py-3 border-2 border-gray-200 rounded-md text-sm focus:outline-none focus:border-purple-600"
-    //                         required
-    //                         autoFocus
-    //                     />
-    //                     <p className="text-xs text-gray-500 mt-1">
-    //                         150 characters or fewer. Letters, digits and @/./+/-/_ only.
-    //                     </p>
-    //                 </div>
-
-    //                 <div>
-    //                     <label className="block mb-2 text-gray-800 font-semibold text-sm">
-    //                         Password <span className="text-red-500">*</span>
-    //                     </label>
-    //                     <input
-    //                         type="password"
-    //                         value={password}
-    //                         onChange={(e) => setPassword(e.target.value)}
-    //                         className="w-full px-3 py-3 border-2 border-gray-200 rounded-md text-sm focus:outline-none focus:border-purple-600"
-    //                         required
-    //                     />
-    //                     <p className="text-xs text-gray-500 mt-1">
-    //                         Your password must contain at least 8 characters.
-    //                     </p>
-    //                 </div>
-
-    //                 <div>
-    //                     <label className="block mb-2 text-gray-800 font-semibold text-sm">
-    //                         Confirm Password <span className="text-red-500">*</span>
-    //                     </label>
-    //                     <input
-    //                         type="password"
-    //                         value={password2}
-    //                         onChange={(e) => setPassword2(e.target.value)}
-    //                         onKeyPress={(e) => e.key === 'Enter' && handleSubmit(e)}
-    //                         className="w-full px-3 py-3 border-2 border-gray-200 rounded-md text-sm focus:outline-none focus:border-purple-600"
-    //                         required
-    //                     />
-    //                 </div>
-
-    //                 <button
-    //                     onClick={handleSubmit}
-    //                     className="w-full bg-purple-600 text-white py-3.5 rounded-md font-semibold text-base hover:bg-purple-700 transition-colors mt-2"
-    //                 >
-    //                     Register
-    //                 </button>
-    //             </div>
-
-    //             <div className="text-center mt-5 text-gray-600 text-sm">
-    //                 Already have an account?{' '}
-    //                 <span
-    //                     onClick={onSwitchToLogin}
-    //                     className="text-purple-600 font-semibold hover:underline cursor-pointer"
-    //                 >
-    //                     Login here
-    //                 </span>
-    //             </div>
-    //         </div>
-    //     </div>
-    // );
 
     return (
         <div className="min-h-screen bg-linear-to-br from-gray-950 via-gray-900 to-black flex items-center justify-center p-5">

@@ -57,65 +57,7 @@ const Login = ({ onLogin }) => {
       setError("Something went wrong");
     }
   };
-
-  // return (
-  //   <div className="min-h-screen bg-linear-to-br from-purple-500 to-purple-800 flex items-center justify-center p-5">
-  //     <div className="bg-white p-10 rounded-xl shadow-2xl w-full max-w-md">
-  //       <div className="text-center mb-8">
-  //         <h1 className="text-purple-600 text-3xl font-bold mb-2">💬 Chat App</h1>
-  //         <p className="text-gray-600 text-sm">Login to start chatting</p>
-  //       </div>
-
-  //       {error && (
-  //         <div className="bg-red-100 border border-red-400 text-red-800 px-3 py-3 rounded-md mb-5 text-sm">
-  //           {error}
-  //         </div>
-  //       )}
-
-  //       <div className="space-y-5">
-  //         <div>
-  //           <label className="block mb-2 text-gray-800 font-semibold text-sm">Username</label>
-  //           <input
-  //             type="text"
-  //             value={username}
-  //             onChange={(e) => setUsername(e.target.value)}
-  //             className="w-full px-3 py-3 border-2 border-gray-200 rounded-md text-sm focus:outline-none focus:border-purple-600"
-  //             required
-  //             autoFocus
-  //           />
-  //         </div>
-  //         <div>
-  //           <label className="block mb-2 text-gray-800 font-semibold text-sm">Password</label>
-  //           <input
-  //             type="password"
-  //             value={password}
-  //             onChange={(e) => setPassword(e.target.value)}
-  //             onKeyPress={(e) => e.key === 'Enter' && handleSubmit(e)}
-  //             className="w-full px-3 py-3 border-2 border-gray-200 rounded-md text-sm focus:outline-none focus:border-purple-600"
-  //             required
-  //           />
-  //         </div>
-  //         <button
-  //           onClick={handleSubmit}
-  //           className="w-full bg-purple-600 text-white py-3.5 rounded-md font-semibold text-base hover:bg-purple-700 transition-colors mt-2"
-  //         >
-  //           Login
-  //         </button>
-  //       </div>
-
-  //       <div className="text-center mt-5 text-gray-600 text-sm">
-  //         Don't have an account?{' '}
-  //         <Link
-  //           to="/register"
-  //           className="text-purple-600 font-semibold hover:underline cursor-pointer"
-  //         >
-  //           Register here
-  //         </Link>
-  //       </div>
-  //     </div>
-  //   </div>
-  // );
-
+  
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-950 via-gray-900 to-black flex items-center justify-center p-5">
       <div className="bg-gray-900 p-10 rounded-xl shadow-2xl w-full max-w-md border border-gray-800">
