@@ -67,16 +67,6 @@ Install Python deps:
 pip install -r requirements.txt
 ```
 
-Example requirements.txt:
-```text
-Django==5.0
-channels==4.0.0
-uvicorn==0.38.0
-websockets==14.1
-djangorestframework==3.14.0
-django-cors-headers==4.3.1
-```
-
 Migrate and create superuser:
 ```bash
 python manage.py makemigrations
@@ -106,7 +96,7 @@ package.json (relevant):
 ## Running the App
 Start backend (ASGI):
 ```bash
-uvicorn chatproject.asgi:application --host 127.0.0.1 --port 8000 --reload
+python -m uvicorn chatproject.asgi:application --reload --host 127.0.0.1 --port 8000
 ```
 Backend: http://127.0.0.1:8000
 
@@ -162,12 +152,6 @@ CHANNEL_LAYERS = {
 ASGI_APPLICATION = "chatproject.asgi.application"
 ```
 
-.env:
-```
-VITE_API_URL=http://127.0.0.1:8000
-VITE_WS_URL=ws://127.0.0.1:8000
-```
-
 ## Usage
 - Register and login
 - Create or join rooms
@@ -196,50 +180,6 @@ ws.onmessage = (event) => {
     console.log(data.message, data.username);
 };
 ```
-
-## Models (example)
-```py
-class Room(models.Model):
-        name = models.CharField(max_length=255, unique=True)
-        slug = models.SlugField(unique=True)
-        description = models.TextField(blank=True)
-        created_by = models.ForeignKey(User, on_delete=models.CASCADE)
-        created_at = models.DateTimeField(auto_now_add=True)
-
-class Message(models.Model):
-        room = models.ForeignKey(Room, on_delete=models.CASCADE)
-        user = models.ForeignKey(User, on_delete=models.CASCADE)
-        content = models.TextField()
-        timestamp = models.DateTimeField(auto_now_add=True)
-```
-
-## Troubleshooting
-- WebSocket not connecting: ensure backend running and WS URL correct
-- CORS issues: update CORS_ALLOWED_ORIGINS
-- DB issues:
-```bash
-python manage.py flush
-python manage.py migrate
-```
-- Missing packages: reinstall requirements / npm packages
-
-## Deployment (notes)
-- Use Redis channel layer in production:
-```py
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": { "hosts": [("127.0.0.1", 6379)] },
-    },
-}
-```
-- Build frontend:
-```bash
-cd frontend
-npm run build
-```
-- Use PostgreSQL in production (example DATABASES config)
-- Platform options: Heroku, Render, Railway, AWS (backend); Vercel, Netlify, S3+CloudFront (frontend)
 
 ## API Endpoints
 - POST /api/auth/register/

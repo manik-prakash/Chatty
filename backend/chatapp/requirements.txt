@@ -1,4 +1,6 @@
-Django==5.0
-channels==4.0.0
-uvicorn==0.38.0
-websockets==14.1
+Django
+channels
+uvicorn
+websockets
+djangorestframework
+django-cors-headers

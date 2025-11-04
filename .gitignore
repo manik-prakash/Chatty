@@ -6,6 +6,7 @@ backend/chatapp/env/
 backend/chatapp/venv/
 media/
 staticfiles/
+backend/chatapp/command.txt
 
 frontend/node_modules/
 frontend/dist/
