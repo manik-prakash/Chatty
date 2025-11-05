@@ -53,7 +53,6 @@ const RoomList = ({ user, onLogout, onJoinRoom }) => {
     }
 
     setIsCreating(true);
-    console.log("=== CREATING ROOM ===");
     console.log("Room data:", { name: roomName, description: roomDescription });
 
     try {
@@ -109,7 +108,6 @@ const RoomList = ({ user, onLogout, onJoinRoom }) => {
       setTimeout(() => setMessage(""), 5000);
     } finally {
       setIsCreating(false);
-      console.log("=== END CREATE ROOM ===");
     }
   };
 
@@ -124,7 +122,6 @@ const RoomList = ({ user, onLogout, onJoinRoom }) => {
 
     try {
       const csrftoken = getCookie('csrftoken');
-      console.log("CSRF Token found:", !!csrftoken);
 
       const response = await fetch(`http://localhost:8000/api/rooms/${roomId}/`, {
         method: "DELETE",
@@ -159,7 +156,6 @@ const RoomList = ({ user, onLogout, onJoinRoom }) => {
       setTimeout(() => setMessage(""), 5000);
     } finally {
       setDeletingRoomId(null);
-      console.log("=== END DELETE ROOM ===");
     }
   };
 
@@ -249,7 +245,7 @@ const RoomList = ({ user, onLogout, onJoinRoom }) => {
                       className="text-red-400 hover:text-red-300 hover:bg-red-950 p-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Delete room"
                     >
-                      {deletingRoomId === room.id ? '⏳' : '🗑️'}
+                      {deletingRoomId === room.id ? 'Processing' : 'Delete'}
                     </button>
                   )}
                 </div>
@@ -257,7 +253,12 @@ const RoomList = ({ user, onLogout, onJoinRoom }) => {
                   <p className="text-gray-400 mb-3 text-sm">{room.description}</p>
                 )}
                 <div className="text-gray-600 text-xs mb-3">
-                  Created by {room.created_by?.username || 'Unknown'} • {new Date(room.created_at).toLocaleDateString()}
+                  Created by {room.created_by?.username || 'Unknown'} •  
+                  {
+                    new Date(room.created_at).toLocaleString("en-IN", {timeZone: "Asia/Kolkata",dateStyle: "medium",
+                      timeStyle: "short"
+                    })
+                  }
                 </div>
                 <button
                   onClick={() => {

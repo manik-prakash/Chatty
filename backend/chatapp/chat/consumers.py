@@ -11,10 +11,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f'chat_{self.room_name}'
         
-        # Check if user is authenticated
         user = self.scope.get('user')
         if user and user.is_authenticated:
-            # Join room group
             await self.channel_layer.group_add(
                 self.room_group_name,
                 self.channel_name
@@ -24,7 +22,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.close()
     
     async def disconnect(self, close_code):
-        # Leave room group
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
@@ -38,10 +35,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if not message:
             return
         
-        # Save message to database
         saved_message = await self.save_message(username, self.room_name, message)
-        
-        # Send message to room group
+
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -59,7 +54,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         timestamp = event['timestamp']
         message_id = event.get('id')
         
-        # Send message to WebSocket
         await self.send(text_data=json.dumps({
             'id': message_id,
             'message': message,
